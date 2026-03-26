@@ -1,0 +1,715 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Portfolio Review — Senior Product Designer</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;500;600;700;800&family=DM+Mono:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #0d0d0f;
+    --surface: #141416;
+    --surface2: #1a1a1e;
+    --border: #252529;
+    --border2: #2e2e34;
+    --text: #f0f0f2;
+    --text2: #8888a0;
+    --text3: #55556a;
+    --accent: #c8f55a;
+    --accent2: #7b6ef6;
+    --red: #f55a6e;
+    --amber: #f5b55a;
+    --green: #5af599;
+    --mono: 'DM Mono', monospace;
+    --sans: 'Syne', sans-serif;
+    --sidebar-w: 300px;
+    --header-h: 52px;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { font-family: var(--sans); background: var(--bg); color: var(--text); height: 100vh; display: flex; flex-direction: column; overflow: hidden; }
+
+  /* HEADER */
+  .header { height: var(--header-h); background: var(--surface); border-bottom: 1px solid var(--border); display: flex; align-items: center; padding: 0 20px; gap: 16px; flex-shrink: 0; z-index: 100; }
+  .brand-dot { width: 8px; height: 8px; background: var(--accent); border-radius: 50%; animation: pulse 2.5s ease-in-out infinite; flex-shrink: 0; }
+  @keyframes pulse { 0%,100% { opacity:1;transform:scale(1); } 50% { opacity:0.5;transform:scale(0.8); } }
+  .brand-label { font-size: 13px; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; }
+  .header-role { font-family: var(--mono); font-size: 11px; color: var(--text3); letter-spacing: 0.04em; padding: 3px 8px; border: 1px solid var(--border2); border-radius: 4px; }
+  .header-stats { margin-left: auto; display: flex; align-items: center; gap: 20px; }
+  .stat { display: flex; flex-direction: column; align-items: flex-end; }
+  .stat-n { font-size: 15px; font-weight: 700; line-height: 1; }
+  .stat-l { font-family: var(--mono); font-size: 9px; color: var(--text3); text-transform: uppercase; letter-spacing: 0.06em; margin-top: 2px; }
+  .header-sep { width: 1px; height: 24px; background: var(--border); }
+
+  /* LAYOUT */
+  .main { flex: 1; display: flex; overflow: hidden; }
+
+  /* SIDEBAR */
+  .sidebar { width: var(--sidebar-w); background: var(--surface); border-right: 1px solid var(--border); display: flex; flex-direction: column; flex-shrink: 0; }
+  .sidebar-search { padding: 12px; border-bottom: 1px solid var(--border); flex-shrink: 0; }
+  .search-wrap { position: relative; display: flex; align-items: center; }
+  .search-icon { position: absolute; left: 10px; color: var(--text3); font-size: 13px; pointer-events: none; }
+  #search { width: 100%; background: var(--surface2); border: 1px solid var(--border2); color: var(--text); font-family: var(--mono); font-size: 12px; padding: 8px 10px 8px 30px; border-radius: 6px; outline: none; transition: border-color 0.2s; }
+  #search::placeholder { color: var(--text3); }
+  #search:focus { border-color: var(--accent2); }
+  .sidebar-filters { padding: 8px 12px; display: flex; gap: 6px; border-bottom: 1px solid var(--border); flex-shrink: 0; flex-wrap: wrap; }
+  .filter-btn { font-family: var(--mono); font-size: 10px; letter-spacing: 0.05em; text-transform: uppercase; padding: 4px 8px; border-radius: 4px; border: 1px solid var(--border2); background: transparent; color: var(--text2); cursor: pointer; transition: all 0.15s; }
+  .filter-btn:hover { border-color: var(--text3); color: var(--text); }
+  .filter-btn.active { background: var(--accent); border-color: var(--accent); color: #0d0d0f; font-weight: 600; }
+  .sidebar-count { padding: 6px 12px; font-family: var(--mono); font-size: 10px; color: var(--text3); letter-spacing: 0.04em; border-bottom: 1px solid var(--border); flex-shrink: 0; }
+  .sidebar-list { flex: 1; overflow-y: auto; scrollbar-width: thin; scrollbar-color: var(--border2) transparent; }
+  .sidebar-list::-webkit-scrollbar { width: 4px; }
+  .sidebar-list::-webkit-scrollbar-thumb { background: var(--border2); border-radius: 2px; }
+  .sidebar-pagination { padding: 8px 12px; border-top: 1px solid var(--border); display: flex; align-items: center; justify-content: space-between; flex-shrink: 0; }
+  .page-info { font-family: var(--mono); font-size: 10px; color: var(--text3); letter-spacing: 0.04em; }
+  .page-btn { font-family: var(--mono); font-size: 10px; letter-spacing: 0.05em; text-transform: uppercase; padding: 5px 10px; border-radius: 4px; border: 1px solid var(--border2); background: transparent; color: var(--text2); cursor: pointer; transition: all 0.15s; }
+  .page-btn:hover:not(:disabled) { border-color: var(--text3); color: var(--text); background: var(--surface2); }
+  .page-btn:disabled { opacity: 0.3; cursor: default; }
+
+  .candidate-row { padding: 10px 12px; cursor: pointer; border-bottom: 1px solid var(--border); display: flex; align-items: center; gap: 10px; transition: background 0.1s; position: relative; }
+  .candidate-row:hover { background: var(--surface2); }
+  .candidate-row.active { background: rgba(200,245,90,0.06); border-left: 2px solid var(--accent); padding-left: 10px; }
+  .candidate-avatar { width: 30px; height: 30px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 11px; font-weight: 700; flex-shrink: 0; }
+  .candidate-info { flex: 1; min-width: 0; }
+  .candidate-name { font-size: 13px; font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; line-height: 1.2; }
+  .candidate-meta { font-family: var(--mono); font-size: 10px; color: var(--text3); margin-top: 2px; display: flex; gap: 6px; }
+  .dot-li { width: 5px; height: 5px; border-radius: 50%; background: #0077b5; display:inline-block; }
+  .dot-gh { width: 5px; height: 5px; border-radius: 50%; background: var(--green); display:inline-block; }
+  .status-badge { font-family: var(--mono); font-size: 9px; letter-spacing: 0.04em; text-transform: uppercase; padding: 2px 6px; border-radius: 3px; cursor: pointer; transition: all 0.15s; white-space: nowrap; }
+  .status-badge.unreviewed { background: rgba(255,255,255,0.04); color: var(--text3); border: 1px solid var(--border2); }
+  .status-badge.starred { background: rgba(245,181,90,0.15); color: var(--amber); border: 1px solid rgba(245,181,90,0.3); }
+  .status-badge.shortlisted { background: rgba(90,245,153,0.15); color: var(--green); border: 1px solid rgba(90,245,153,0.3); }
+  .status-badge.pass { background: rgba(245,90,110,0.1); color: var(--red); border: 1px solid rgba(245,90,110,0.2); }
+
+  .status-wrap { position: relative; flex-shrink: 0; }
+  .status-dropdown { display: none; position: absolute; right: 0; top: 100%; margin-top: 4px; background: var(--surface2); border: 1px solid var(--border2); border-radius: 6px; overflow: hidden; z-index: 200; min-width: 100px; box-shadow: 0 8px 24px rgba(0,0,0,0.5); }
+  .status-wrap.open .status-dropdown { display: block; }
+  .status-option { font-family: var(--mono); font-size: 10px; letter-spacing: 0.04em; text-transform: uppercase; padding: 7px 12px; cursor: pointer; transition: background 0.1s; white-space: nowrap; display: flex; align-items: center; gap: 6px; }
+  .status-option:hover { background: var(--surface); }
+  .status-option.opt-starred { color: var(--amber); }
+  .status-option.opt-shortlisted { color: var(--green); }
+  .status-option.opt-pass { color: var(--red); }
+
+  .no-port-badge { font-family: var(--mono); font-size: 9px; padding: 2px 5px; background: rgba(123,110,246,0.12); color: var(--accent2); border: 1px solid rgba(123,110,246,0.25); border-radius: 3px; }
+
+  /* PREVIEW */
+  .preview-pane { flex: 1; display: flex; flex-direction: column; overflow: hidden; background: var(--bg); }
+  .preview-toolbar { height: 48px; background: var(--surface); border-bottom: 1px solid var(--border); display: flex; align-items: center; padding: 0 16px; gap: 12px; flex-shrink: 0; }
+  .preview-name { font-size: 14px; font-weight: 700; white-space: nowrap; }
+  .preview-url { font-family: var(--mono); font-size: 11px; color: var(--text3); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; max-width: 300px; }
+  .preview-actions { margin-left: auto; display: flex; gap: 8px; align-items: center; flex-shrink: 0; }
+  .action-btn { font-family: var(--mono); font-size: 11px; letter-spacing: 0.04em; text-transform: uppercase; padding: 5px 12px; border-radius: 5px; border: 1px solid var(--border2); background: transparent; color: var(--text2); text-decoration: none; cursor: pointer; transition: all 0.15s; display: flex; align-items: center; gap: 5px; white-space: nowrap; }
+  .action-btn:hover { border-color: var(--text3); color: var(--text); background: var(--surface2); }
+  .action-btn.port { border-color: rgba(200,245,90,0.3); color: var(--accent); }
+  .action-btn.port:hover { background: rgba(200,245,90,0.08); }
+  .action-btn.li { border-color: rgba(0,119,181,0.3); color: #0ea5e9; }
+  .action-btn.li:hover { background: rgba(14,165,233,0.08); }
+
+  /* SCREENSHOT AREA */
+  .preview-content { flex: 1; position: relative; overflow: hidden; display: flex; flex-direction: column; }
+
+  .screenshot-view {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: flex-start;
+    overflow-y: auto;
+    padding: 32px;
+    gap: 24px;
+    scrollbar-width: thin;
+    scrollbar-color: var(--border2) transparent;
+  }
+
+  .screenshot-card {
+    width: 100%;
+    max-width: 960px;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: 0 8px 40px rgba(0,0,0,0.4);
+  }
+
+  .browser-chrome {
+    background: var(--surface2);
+    border-bottom: 1px solid var(--border);
+    padding: 10px 14px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+  .browser-dots { display: flex; gap: 6px; }
+  .browser-dot { width: 10px; height: 10px; border-radius: 50%; }
+  .browser-dot.red { background: #f55a6e; }
+  .browser-dot.yellow { background: #f5b55a; }
+  .browser-dot.green { background: #5af599; }
+  .browser-bar {
+    flex: 1;
+    background: var(--bg);
+    border: 1px solid var(--border2);
+    border-radius: 5px;
+    padding: 4px 10px;
+    font-family: var(--mono);
+    font-size: 11px;
+    color: var(--text3);
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  .screenshot-img-wrap {
+    position: relative;
+    width: 100%;
+    min-height: 520px;
+    background: var(--bg);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .screenshot-img {
+    width: 100%;
+    display: block;
+    transition: opacity 0.4s;
+  }
+
+  /* Loading state */
+  .loading-state {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 16px;
+    background: var(--bg);
+    transition: opacity 0.3s;
+  }
+  .loading-state.hidden { opacity: 0; pointer-events: none; }
+  .loading-spinner {
+    width: 36px; height: 36px;
+    border: 2px solid var(--border2);
+    border-top-color: var(--accent);
+    border-radius: 50%;
+    animation: spin 0.8s linear infinite;
+  }
+  @keyframes spin { to { transform: rotate(360deg); } }
+  .loading-label {
+    font-family: var(--mono);
+    font-size: 11px;
+    color: var(--text3);
+    letter-spacing: 0.04em;
+  }
+
+  /* Error state */
+  .error-state {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 12px;
+    background: var(--bg);
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.3s;
+  }
+  .error-state.visible { opacity: 1; pointer-events: all; }
+  .error-icon { font-size: 32px; opacity: 0.3; }
+  .error-text { font-family: var(--mono); font-size: 12px; color: var(--text3); text-align: center; line-height: 1.7; }
+  .retry-btn, .open-btn {
+    font-family: var(--mono); font-size: 11px; text-transform: uppercase; letter-spacing: 0.06em;
+    padding: 7px 16px; border-radius: 5px; border: none; cursor: pointer; transition: opacity 0.15s; text-decoration: none;
+  }
+  .retry-btn { background: var(--surface2); color: var(--text2); border: 1px solid var(--border2); }
+  .retry-btn:hover { color: var(--text); border-color: var(--text3); }
+  .open-btn { background: var(--accent); color: #0d0d0f; font-weight: 600; }
+  .open-btn:hover { opacity: 0.85; }
+  .btn-row { display: flex; gap: 8px; }
+
+  /* No portfolio state */
+  .no-port-state {
+    flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 12px;
+  }
+  .no-port-glyph { font-size: 40px; opacity: 0.15; }
+  .no-port-text { font-family: var(--mono); font-size: 12px; color: var(--text3); text-align: center; line-height: 1.8; }
+
+  /* Empty state */
+  .empty-state { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 12px; }
+  .empty-glyph { font-size: 48px; opacity: 0.08; }
+  .empty-text { font-family: var(--mono); font-size: 12px; color: var(--text3); text-align: center; line-height: 1.7; }
+
+  /* KEYS HINT */
+  .keys-hint { position: fixed; bottom: 14px; right: 14px; background: var(--surface2); border: 1px solid var(--border2); border-radius: 8px; padding: 8px 12px; display: flex; gap: 14px; opacity: 0.55; transition: opacity 0.2s; }
+  .keys-hint:hover { opacity: 1; }
+  .key { font-family: var(--mono); font-size: 10px; color: var(--text3); display: flex; align-items: center; gap: 4px; }
+  kbd { background: var(--surface); border: 1px solid var(--border2); border-radius: 3px; padding: 1px 5px; font-size: 10px; font-family: var(--mono); color: var(--text2); }
+</style>
+</head>
+<body>
+
+<div class="header">
+  <div style="display:flex;align-items:center;gap:10px">
+    <div class="brand-dot"></div>
+    <span class="brand-label">Portfolio Review</span>
+  </div>
+  <span class="header-role">Senior Product Designer · Core Business Experience</span>
+  <div class="header-stats">
+    <div class="stat"><span class="stat-n">199</span><span class="stat-l">Candidates</span></div>
+    <div class="header-sep"></div>
+    <div class="stat"><span class="stat-n">176</span><span class="stat-l">Portfolios</span></div>
+    <div class="header-sep"></div>
+    <div class="stat"><span class="stat-n" id="hdr-starred">0</span><span class="stat-l">Starred</span></div>
+    <div class="header-sep"></div>
+    <div class="stat"><span class="stat-n" id="hdr-shortlisted">0</span><span class="stat-l">Shortlisted</span></div>
+  </div>
+</div>
+
+<div class="main">
+  <div class="sidebar">
+    <div class="sidebar-search">
+      <div class="search-wrap">
+        <span class="search-icon">⌕</span>
+        <input type="text" id="search" placeholder="Search candidates..." oninput="filterList()">
+      </div>
+    </div>
+    <div class="sidebar-filters">
+      <button class="filter-btn active" onclick="setFilter('all',this)">All</button>
+      <button class="filter-btn" onclick="setFilter('portfolio',this)">Portfolio</button>
+      <button class="filter-btn" onclick="setFilter('starred',this)">Yes</button>
+      <button class="filter-btn" onclick="setFilter('shortlisted',this)">Maybe</button>
+      <button class="filter-btn" onclick="setFilter('pass',this)">✗ Pass</button>
+    </div>
+    <div class="sidebar-count" id="sidebar-count">176 with portfolio · 23 without</div>
+    <div class="sidebar-list" id="candidate-list"></div>
+    <div class="sidebar-pagination">
+      <button class="page-btn" id="page-prev" onclick="changePage(-1)">← Prev</button>
+      <span class="page-info" id="page-info">1 / 1</span>
+      <button class="page-btn" id="page-next" onclick="changePage(1)">Next →</button>
+    </div>
+  </div>
+
+  <div class="preview-pane">
+    <div class="preview-toolbar">
+      <span class="preview-name" id="preview-name">Select a candidate</span>
+      <span class="preview-url" id="preview-url"></span>
+      <div class="preview-actions" id="preview-actions"></div>
+    </div>
+    <div class="preview-content" id="preview-content">
+      <div class="empty-state">
+        <div class="empty-glyph">◈</div>
+        <div class="empty-text">Select a candidate from the list<br>to view their portfolio screenshot</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="keys-hint">
+  <span class="key"><kbd>↑</kbd><kbd>↓</kbd> Navigate</span>
+  <span class="key"><kbd>S</kbd> Yes</span>
+  <span class="key"><kbd>G</kbd> Maybe</span>
+  <span class="key"><kbd>P</kbd> Pass</span>
+  <span class="key"><kbd>O</kbd> Open</span>
+</div>
+
+<script>
+const CANDIDATES = [{"name": "Harjanto Sumali", "portfolio": "http://www.eggnoodlesoup.com", "linkedin": "https://www.linkedin.com/in/harjanto-sumali-215234/", "greenhouse": "https://app6.greenhouse.io/people/undefined/applications/undefined/redesign"}, {"name": "Hannah Mussi", "portfolio": "https://hmussi.com/", "linkedin": "https://www.linkedin.com/in/hannahmussi/", "greenhouse": "https://app6.greenhouse.io/people/undefined/applications/undefined/redesign"}, {"name": "Vivian Ho", "portfolio": "https://vivdesigns.com", "linkedin": "https://www.linkedin.com/in/vivdesigns-nyc/", "greenhouse": "https://app6.greenhouse.io/people/undefined/applications/undefined/redesign"}, {"name": "Donald Merrill", "portfolio": "http://www.donnymerrill.com", "linkedin": "https://www.linkedin.com/in/donnymerrill/", "greenhouse": "https://app6.greenhouse.io/people/undefined/applications/undefined/redesign"}, {"name": "Frank Barnhardt", "portfolio": "https://fbdesign.org/", "linkedin": "https://www.linkedin.com/in/frankbarnhardt/", "greenhouse": "https://app6.greenhouse.io/people/undefined/applications/undefined/redesign"}, {"name": "Donovan Lara", "portfolio": "http://www.donovanlara.com", "linkedin": "", "greenhouse": "https://app6.greenhouse.io/people/undefined/applications/undefined/redesign"}, {"name": "Alana Mariano", "portfolio": "https://www.alanamariano.com", "linkedin": "", "greenhouse": "https://app6.greenhouse.io/people/undefined/applications/undefined/redesign"}, {"name": "Lauren Achtem", "portfolio": "https://drive.google.com/file/d/1ieePQ0O8jCJQq-IrVsJ6GF8TDFCJudFz/view?usp=sharing", "linkedin": "https://www.linkedin.com/in/lauren-ipsum/", "greenhouse": "https://app6.greenhouse.io/people/undefined/applications/undefined/redesign"}, {"name": "Jean Gray", "portfolio": "https://www.figma.com/deck/CHcz1Af3gn0u5GqL9pb73z", "linkedin": "http://www.linkedin.com/in/jean-gray-bb557053", "greenhouse": "https://app6.greenhouse.io/people/undefined/applications/undefined/redesign"}, {"name": "Moira Gill", "portfolio": "http://www.moiragill.com", "linkedin": "https://www.linkedin.com/in/moiragill/", "greenhouse": "https://app6.greenhouse.io/people/undefined/applications/undefined/redesign"}, {"name": "Sandra Freay", "portfolio": "https://www.freay.design/", "linkedin": "https://www.linkedin.com/in/sandra-freay/", "greenhouse": "https://app6.greenhouse.io/people/undefined/applications/undefined/redesign"}, {"name": "Scott Aquilino", "portfolio": "https://uxbyscott.com/", "linkedin": "https://www.linkedin.com/in/scott-aquilino/", "greenhouse": "https://app6.greenhouse.io/people/undefined/applications/undefined/redesign"}, {"name": "Ryan McQueen", "portfolio": "https://ryanmcqueen.com", "linkedin": "https://linkedin.com/in/rcmcqueen", "greenhouse": "https://app6.greenhouse.io/people/undefined/applications/undefined/redesign"}, {"name": "Yonghee Lee", "portfolio": "https://www.calebyhlee.com", "linkedin": "", "greenhouse": "https://app6.greenhouse.io/people/undefined/applications/undefined/redesign"}, {"name": "Michael Mantone II", "portfolio": "https://mike4347.myportfolio.com/", "linkedin": "http://www.linkedin.com/in/michael-mantone", "greenhouse": "https://app6.greenhouse.io/people/undefined/applications/undefined/redesign"}, {"name": "Tony McDaniels", "portfolio": "https://www.hitonestudios.com/meet-tone", "linkedin": "https://www.linkedin.com/in/tony-mcdaniels-07101bb0/", "greenhouse": "https://app6.greenhouse.io/people/undefined/applications/undefined/redesign"}, {"name": "Braden Katz", "portfolio": "https://craftui.co/", "linkedin": "https://www.linkedin.com/in/bradenkatz/", "greenhouse": "https://app6.greenhouse.io/people/undefined/applications/undefined/redesign"}, {"name": "Christopher Schwing", "portfolio": "https://schwi.ng/", "linkedin": "https://www.linkedin.com/in/chrisschwing/", "greenhouse": "https://app6.greenhouse.io/people/undefined/applications/undefined/redesign"}, {"name": "Linda Khuth", "portfolio": "https://lindakhuth.com/", "linkedin": "https://www.linkedin.com/in/linda-khuth/", "greenhouse": "https://app6.greenhouse.io/people/undefined/applications/undefined/redesign"}, {"name": "Jesse Wilson", "portfolio": "https://thoughtablejw.com/", "linkedin": "https://www.linkedin.com/in/jessewil/", "greenhouse": "https://app6.greenhouse.io/people/undefined/applications/undefined/redesign"}, {"name": "Fernando Ruiz", "portfolio": "https://www.fernandoux.com/", "linkedin": "https://www.linkedin.com/in/fernando-ruiz-ux/", "greenhouse": "https://app6.greenhouse.io/people/undefined/applications/undefined/redesign"}, {"name": "Jeremy Kanter", "portfolio": "https://www.jeremykanter.com/", "linkedin": "https://www.linkedin.com/in/jeremykanter/", "greenhouse": "https://app6.greenhouse.io/people/undefined/applications/undefined/redesign"}, {"name": "Sarah LeCroy", "portfolio": "http://www.sarahlecroy.com", "linkedin": "https://www.linkedin.com/in/sarahlecroy/", "greenhouse": "https://app6.greenhouse.io/people/undefined/applications/undefined/redesign"}, {"name": "Susie Kim", "portfolio": "https://www.sage.com/en-us/sage-business-cloud/intacct-1/", "linkedin": "https://www.linkedin.com/in/dudleykim/", "greenhouse": "https://app6.greenhouse.io/people/undefined/applications/undefined/redesign"}, {"name": "Damilare Adekunle", "portfolio": "https://hellodamii.work", "linkedin": "https://www.linkedin.com/in/damilareadekunle", "greenhouse": "https://app6.greenhouse.io/people/undefined/applications/undefined/redesign"}, {"name": "Mal Malik", "portfolio": "https://maliksqua.red", "linkedin": "https://www.linkedin.com/in/maliksquared", "greenhouse": "https://app6.greenhouse.io/people/undefined/applications/undefined/redesign"}, {"name": "John Malloy", "portfolio": "https://john-malloy.org/", "linkedin": "https://www.linkedin.com/in/jomalloy", "greenhouse": "https://app6.greenhouse.io/people/undefined/applications/undefined/redesign"}, {"name": "Rohit verma", "portfolio": "https://rohitcv.neocities.org/search/", "linkedin": "https://www.linkedin.com/in/rohit-verma-791b37153/", "greenhouse": "https://app6.greenhouse.io/people/undefined/applications/undefined/redesign"}, {"name": "Jill Danielle Liao", "portfolio": "https://www.jilldanielleliao.com/", "linkedin": "https://www.linkedin.com/in/jilldanielleliao/", "greenhouse": "https://app6.greenhouse.io/people/undefined/applications/undefined/redesign"}, {"name": "Dev Shrimali", "portfolio": "http://www.devux.in", "linkedin": "https://www.linkedin.com/in/dev-shrimali/", "greenhouse": "https://app6.greenhouse.io/people/undefined/applications/undefined/redesign"}, {"name": "Shailendra Sharma", "portfolio": "https://shailportfolio-yrdwg9nlgbhwjrrn.builder-preview.com/", "linkedin": "https://www.linkedin.com/in/shailendrauxdesigner/", "greenhouse": "https://app6.greenhouse.io/people/undefined/applications/undefined/redesign"}, {"name": "Dan Liu", "portfolio": "https://danliu.one/", "linkedin": "https://www.linkedin.com/in/dan-liu-b44b1610a/", "greenhouse": "https://app6.greenhouse.io/people/undefined/applications/undefined/redesign"}, {"name": "Mahesh Guntivenkata", "portfolio": "http://www.maheshgv.com", "linkedin": "http://www.maheshgv.com", "greenhouse": "https://app6.greenhouse.io/people/undefined/applications/undefined/redesign"}, {"name": "Paul Hahn", "portfolio": "https://oldbayeverything.com", "linkedin": "https://www.linkedin.com/in/hahnpaul/", "greenhouse": "https://app6.greenhouse.io/people/undefined/applications/undefined/redesign"}, {"name": "NeYane Daniel", "portfolio": "https://nd-uxmelange.myportfolio.com/", "linkedin": "", "greenhouse": "https://app6.greenhouse.io/people/undefined/applications/undefined/redesign"}, {"name": "Richard Pascual", "portfolio": "https://www.richeffect.com", "linkedin": "https://www.linkedin.com/in/richardpascual", "greenhouse": "https://app6.greenhouse.io/people/undefined/applications/undefined/redesign"}, {"name": "Ga\u00eblle Lessard", "portfolio": "https://gaellelessard.com/", "linkedin": "https://www.linkedin.com/in/gaellelessard/", "greenhouse": "https://app6.greenhouse.io/people/undefined/applications/undefined/redesign"}, {"name": "Djordje Djokovic", "portfolio": "https://www.instagram.com/djordjedjokovicart/", "linkedin": "https://www.linkedin.com/in/djordje-djokovic-b14b11284/", "greenhouse": "https://app6.greenhouse.io/people/undefined/applications/undefined/redesign"}, {"name": "Madison Jennings", "portfolio": "https://madisonbjennin.gs/", "linkedin": "", "greenhouse": "https://app6.greenhouse.io/people/undefined/applications/undefined/redesign"}, {"name": "Tommy Rainwater", "portfolio": "https://www.thomasrainwater.com", "linkedin": "https://www.linkedin.com/in/tommyrainwater/", "greenhouse": "https://app6.greenhouse.io/people/undefined/applications/undefined/redesign"}, {"name": "Towsiful Chowdhury", "portfolio": "https://www.towsiful.com/", "linkedin": "", "greenhouse": "https://app6.greenhouse.io/people/undefined/applications/undefined/redesign"}, {"name": "Alex Zhurankou", "portfolio": "https://zhurankou.com", "linkedin": "https://www.linkedin.com/in/zhurankou/", "greenhouse": "https://app6.greenhouse.io/people/undefined/applications/undefined/redesign"}, {"name": "Erik W. COUNCIL", "portfolio": "Https://erik-council.webflow.io/home-9/home-1", "linkedin": "Https://www.linkedin.com/in/erikcouncil/", "greenhouse": "https://app6.greenhouse.io/people/undefined/applications/undefined/redesign"}, {"name": "Jon Simon", "portfolio": "https://jonsimondesigns.framer.website/", "linkedin": "https://www.linkedin.com/in/jsimon94/", "greenhouse": "https://app6.greenhouse.io/people/undefined/applications/undefined/redesign"}, {"name": "Benjamin Nguyen", "portfolio": "https://www.birdsdecay.com/port_nguyen.pdf", "linkedin": "https://www.linkedin.com/in/mrbenjamin/", "greenhouse": "https://app6.greenhouse.io/people/undefined/applications/undefined/redesign"}, {"name": "Olena Burban", "portfolio": "https://nelenadesigns.framer.website/", "linkedin": "https://www.linkedin.com/in/olenaburban/", "greenhouse": "https://app6.greenhouse.io/people/undefined/applications/undefined/redesign"}, {"name": "Erica Gatts", "portfolio": "https://www.ericagatts.com/", "linkedin": "http://www.linkedin.com/in/ericagatts", "greenhouse": "https://app6.greenhouse.io/people/undefined/applications/undefined/redesign"}, {"name": "Andrea Brizuela", "portfolio": "https://uxfirst.me/", "linkedin": "https://www.linkedin.com/in/anbrizuela/", "greenhouse": "https://app6.greenhouse.io/people/undefined/applications/undefined/redesign"}, {"name": "Laura Mackay", "portfolio": "https://www.builtbylaura.com", "linkedin": "https://www.linkedin.com/in/laurammackay/", "greenhouse": "https://app6.greenhouse.io/people/undefined/applications/undefined/redesign"}, {"name": "Kylie Dunkley", "portfolio": "https://www.kyliedunkley.com/", "linkedin": "https://www.linkedin.com/in/kyliedunkley/", "greenhouse": "https://app6.greenhouse.io/people/undefined/applications/undefined/redesign"}, {"name": "Mostafa El-Nagar", "portfolio": "https://mostafaelnagar.framer.website", "linkedin": "https://linkedin.com/in/mostafa-el-nagar", "greenhouse": "https://app6.greenhouse.io/people/undefined/applications/undefined/redesign"}, {"name": "Kelly Dee Williams", "portfolio": "https://superbase.co/work", "linkedin": "https://www.linkedin.com/in/kellydwilliams/", "greenhouse": "https://app6.greenhouse.io/people/undefined/applications/undefined/redesign"}, {"name": "Kelly Brown", "portfolio": "https://kelly-brown.super.site", "linkedin": "http://www.linkedin.com/in/uxkbrown", "greenhouse": "https://app6.greenhouse.io/people/undefined/applications/undefined/redesign"}, {"name": "Tommy Spero", "portfolio": "https://www.tommyspero.com", "linkedin": "https://www.linkedin.com/in/tommyspero/", "greenhouse": "https://app6.greenhouse.io/people/undefined/applications/undefined/redesign"}, {"name": "Julia Price", "portfolio": "http://www.juliawaresprice.com", "linkedin": "https://www.linkedin.com/in/juliawaresprice/", "greenhouse": "https://app6.greenhouse.io/people/undefined/applications/undefined/redesign"}, {"name": "Huy Hua", "portfolio": "https://www.mynameishuy.com", "linkedin": "https://www.linkedin.com/in/huy-h/", "greenhouse": "https://app6.greenhouse.io/people/undefined/applications/undefined/redesign"}, {"name": "Christian Fazio", "portfolio": "HTTPS://chrisfazio.webflow.io", "linkedin": "", "greenhouse": "https://app6.greenhouse.io/people/undefined/applications/undefined/redesign"}, {"name": "Paul Pardue", "portfolio": "http://www.paulpardue.com/", "linkedin": "https://www.linkedin.com/in/paul-pardue/", "greenhouse": "https://app6.greenhouse.io/people/undefined/applications/undefined/redesign"}, {"name": "Serena Sun", "portfolio": "https://serenasun-site.webflow.io/", "linkedin": "https://www.linkedin.com/in/xinyi-sun0/", "greenhouse": "https://app6.greenhouse.io/people/undefined/applications/undefined/redesign"}, {"name": "Jeremy Asmus", "portfolio": "https://www.jeremyasmus.com", "linkedin": "https://www.linkedin.com/in/jeremyasmus/", "greenhouse": "https://app6.greenhouse.io/people/undefined/applications/undefined/redesign"}, {"name": "Edward Vitralis", "portfolio": "https://www.edwardvitralis.com", "linkedin": "https://www.linkedin.com/in/edward-vitralis", "greenhouse": "https://app6.greenhouse.io/people/undefined/applications/undefined/redesign"}, {"name": "Damien Komala", "portfolio": "https://www.behance.net/damienkomala", "linkedin": "https://www.linkedin.com/in/damienkomala/", "greenhouse": "https://app6.greenhouse.io/people/undefined/applications/undefined/redesign"}, {"name": "Keerthana Ravichandran", "portfolio": "https://keethanaravichandran.framer.website/", "linkedin": "", "greenhouse": "https://app6.greenhouse.io/people/undefined/applications/undefined/redesign"}, {"name": "Igor Nazarenko", "portfolio": "https://igornazarenko.com", "linkedin": "https://www.linkedin.com/in/igornazarenko", "greenhouse": "https://app6.greenhouse.io/people/undefined/applications/undefined/redesign"}, {"name": "Marta Ryzhok", "portfolio": "https://www.figma.com/deck/U1EDiJhBbPhSTjggcGXX9i", "linkedin": "https://www.linkedin.com/in/martaryzhok/", "greenhouse": "https://app6.greenhouse.io/people/undefined/applications/undefined/redesign"}, {"name": "Justin Ma", "portfolio": "http://www.justinzma.com", "linkedin": "https://www.linkedin.com/in/majustin/", "greenhouse": "https://app6.greenhouse.io/people/undefined/applications/undefined/redesign"}, {"name": "Scott Guenther-Lee", "portfolio": "https://www.envisionspace.com/", "linkedin": "https://www.linkedin.com/in/scott-guenther-lee-02a61376/", "greenhouse": "https://app6.greenhouse.io/people/undefined/applications/undefined/redesign"}, {"name": "Joseph Czyz", "portfolio": "https://www.josephczyz.com/", "linkedin": "https://www.linkedin.com/in/joseph-czyz-163149b3/", "greenhouse": "https://app6.greenhouse.io/people/undefined/applications/undefined/redesign"}, {"name": "Avishkar Shinde", "portfolio": "https://www.avishkarshinde.com/", "linkedin": "https://www.linkedin.com/in/xavishkar/", "greenhouse": "https://app6.greenhouse.io/people/undefined/applications/undefined/redesign"}, {"name": "Selena Jiang", "portfolio": "https://hiselena.framer.website/", "linkedin": "https://www.linkedin.com/in/selenajiang/", "greenhouse": "https://app6.greenhouse.io/people/undefined/applications/undefined/redesign"}, {"name": "Jerry Falconer", "portfolio": "https://jerry-falconer-portfolio.webflow.io/", "linkedin": "http://www.linkedin.com/in/jerry-l-falconer-jr-38495316", "greenhouse": "https://app6.greenhouse.io/people/undefined/applications/undefined/redesign"}, {"name": "Brian C. McDonald", "portfolio": "https://brianportfolio.com/", "linkedin": "https://www.linkedin.com/in/brianmcdesign/", "greenhouse": "https://app6.greenhouse.io/people/undefined/applications/undefined/redesign"}, {"name": "Rondal Scott III", "portfolio": "https://figmashort.link/Z4tYBp", "linkedin": "https://www.linkedin.com/in/ghostlabds/", "greenhouse": "https://app6.greenhouse.io/people/undefined/applications/undefined/redesign"}, {"name": "Drew Meyer", "portfolio": "https://www.thedrewbmeyer.com/", "linkedin": "https://www.linkedin.com/in/drewbmeyer", "greenhouse": "https://app6.greenhouse.io/people/undefined/applications/undefined/redesign"}, {"name": "Jay Salvati", "portfolio": "https://www.behance.net/jsisthebest", "linkedin": "https://www.linkedin.com/in/jaysalvati/", "greenhouse": "https://app6.greenhouse.io/people/undefined/applications/undefined/redesign"}, {"name": "Pui yin wong", "portfolio": "https://www.sheilawong.work", "linkedin": "http://www.linkedin.com/in/sheila-wong-002565148", "greenhouse": "https://app6.greenhouse.io/people/undefined/applications/undefined/redesign"}, {"name": "Mohsin Raza", "portfolio": "https://www.mohsinraza.com", "linkedin": "https://www.linkedin.com/in/mohsin-raza-mr110", "greenhouse": "https://app6.greenhouse.io/people/undefined/applications/undefined/redesign"}, {"name": "Gopinath Reddy", "portfolio": "http://www.linkedin.com/in/gopinathreddy1", "linkedin": "http://www.linkedin.com/in/gopinathreddy1", "greenhouse": "https://app6.greenhouse.io/people/undefined/applications/undefined/redesign"}, {"name": "Trevor Tillery", "portfolio": "http://www.tillerydesign.com", "linkedin": "https://www.linkedin.com/in/trevorjamestillery/", "greenhouse": "https://app6.greenhouse.io/people/undefined/applications/undefined/redesign"}, {"name": "Steven Hoober", "portfolio": "https://www.4ourthmobile.com/services/portfolio", "linkedin": "https://www.linkedin.com/in/shoobe01/", "greenhouse": "https://app6.greenhouse.io/people/undefined/applications/undefined/redesign"}, {"name": "Jake Arciniega", "portfolio": "https://jakearciniega.com", "linkedin": "https://www.linkedin.com/in/jake-arciniega/", "greenhouse": "https://app6.greenhouse.io/people/undefined/applications/undefined/redesign"}, {"name": "Apoorva Mahajan", "portfolio": "https://www.linkedin.com/in/apoorva-mahajan94/", "linkedin": "", "greenhouse": "https://app6.greenhouse.io/people/undefined/applications/undefined/redesign"}, {"name": "brad mclaughlin", "portfolio": "http://www.clevercouch.com", "linkedin": "", "greenhouse": "https://app6.greenhouse.io/people/undefined/applications/undefined/redesign"}, {"name": "Chase Carter", "portfolio": "https://chase-carter.webflow.io/", "linkedin": "https://www.linkedin.com/in/bxdconsulting/", "greenhouse": "https://app6.greenhouse.io/people/undefined/applications/undefined/redesign"}, {"name": "Pooja Hari", "portfolio": "https://www.poojahari.com/", "linkedin": "https://www.linkedin.com/in/poojahari09/", "greenhouse": "https://app6.greenhouse.io/people/undefined/applications/undefined/redesign"}, {"name": "Greg Shuster", "portfolio": "https://www.gregshuster.com/", "linkedin": "https://www.linkedin.com/in/shustergreg/", "greenhouse": "https://app6.greenhouse.io/people/undefined/applications/undefined/redesign"}, {"name": "Matthew Jacobson", "portfolio": "https://mjacobson.design/", "linkedin": "https://www.linkedin.com/in/matthew-jacobson-design/", "greenhouse": "https://app6.greenhouse.io/people/undefined/applications/undefined/redesign"}, {"name": "Hiherson Danila", "portfolio": "http://www.hiherson.com", "linkedin": "https://www.linkedin.com/in/hiherson/", "greenhouse": "https://app6.greenhouse.io/people/undefined/applications/undefined/redesign"}, {"name": "Vishal Mehta", "portfolio": "http://www.vishalme.com", "linkedin": "https://www.linkedin.com/in/vishalme", "greenhouse": "https://app6.greenhouse.io/people/undefined/applications/undefined/redesign"}, {"name": "Chloe Lombard", "portfolio": "http://www.chloelombard.com", "linkedin": "http://www.linkedin.com/in/chloe-lombard", "greenhouse": "https://app6.greenhouse.io/people/undefined/applications/undefined/redesign"}, {"name": "hina kadri", "portfolio": "https://docs.google.com/presentation/d/1a_rGp3JCqLV_ewcGSnHAm8C_v_xLO44H/edit?usp=sharing&ouid=101771934799414224125&rtpof=true&sd=true", "linkedin": "", "greenhouse": "https://app6.greenhouse.io/people/undefined/applications/undefined/redesign"}, {"name": "Shannon Clark", "portfolio": "http://www.shannonmarieclark.com", "linkedin": "https://www.linkedin.com/in/shannon-marie-clark", "greenhouse": "https://app6.greenhouse.io/people/undefined/applications/undefined/redesign"}, {"name": "Hannah Khalil", "portfolio": "https://www.hannah-khalil.com/", "linkedin": "", "greenhouse": "https://app6.greenhouse.io/people/undefined/applications/undefined/redesign"}, {"name": "Erin Mahon", "portfolio": "https://erinmahonportfolio.netlify.app/", "linkedin": "", "greenhouse": "https://app6.greenhouse.io/people/undefined/applications/undefined/redesign"}, {"name": "Eliza ) Ash", "portfolio": "https://elizaash.com/", "linkedin": "https://www.linkedin.com/in/eliza-ash", "greenhouse": "https://app6.greenhouse.io/people/undefined/applications/undefined/redesign"}, {"name": "Claudio Cigarro", "portfolio": "https://claudiocigarro.com/", "linkedin": "https://www.linkedin.com/in/claudiocigarro/", "greenhouse": "https://app6.greenhouse.io/people/undefined/applications/undefined/redesign"}, {"name": "Angel Micevski", "portfolio": "https://dribbble.com/micevski", "linkedin": "https://www.linkedin.com/in/angelmicevski/", "greenhouse": "https://app6.greenhouse.io/people/undefined/applications/undefined/redesign"}, {"name": "Gilbert Tursio", "portfolio": "https://drive.google.com/file/d/10XM-jKMw6-6DhFbZklSfGhsnci1aLd3s/view?pli=1", "linkedin": "https://www.linkedin.com/in/gilbert-tursio-63ba143a5", "greenhouse": "https://app6.greenhouse.io/people/undefined/applications/undefined/redesign"}, {"name": "Mide Samuel", "portfolio": "https://midesamuel.com/", "linkedin": "https://www.linkedin.com/in/ademidesamuel/", "greenhouse": "https://app6.greenhouse.io/people/undefined/applications/undefined/redesign"}, {"name": "Ran Zhang", "portfolio": "https://itsran.com/", "linkedin": "", "greenhouse": "https://app6.greenhouse.io/people/undefined/applications/undefined/redesign"}, {"name": "Roman Korneev", "portfolio": "https://romankorneev.framer.website", "linkedin": "", "greenhouse": "https://app6.greenhouse.io/people/undefined/applications/undefined/redesign"}, {"name": "Nathan Major", "portfolio": "https://www.notion.so/Hi-there-I-m-Nathan-Major-268c498a3859808bb8a8db84a7325e15?source=copy_link", "linkedin": "https://www.linkedin.com/in/nathanlmajor?utm_source=share&utm_campaign=share_via&utm_content=profile&utm_medium=android_app", "greenhouse": "https://app6.greenhouse.io/people/undefined/applications/undefined/redesign"}, {"name": "Ranier Tinkelenberg", "portfolio": "https://www.raniertink.com/", "linkedin": "", "greenhouse": "https://app6.greenhouse.io/people/undefined/applications/undefined/redesign"}, {"name": "JERRY ZENG", "portfolio": "http://www.jerryxzeng.com", "linkedin": "https://www.linkedin.com/in/jerry-x-zengjerryxzeng", "greenhouse": "https://app6.greenhouse.io/people/undefined/applications/undefined/redesign"}, {"name": "Santiago Morales", "portfolio": "https://www.sanmorales.com", "linkedin": "https://www.linkedin.com/in/soysantym", "greenhouse": "https://app6.greenhouse.io/people/undefined/applications/undefined/redesign"}, {"name": "Ismael Gutierrez Cruz", "portfolio": "https://www.ismaelgtz.com", "linkedin": "https://www.linkedin.com/in/ismael-gutierrez-cruz-59a848162/", "greenhouse": "https://app6.greenhouse.io/people/undefined/applications/undefined/redesign"}, {"name": "Nicholas Patterson", "portfolio": "https://nicholaspatterson9.wixsite.com/my-portfolio", "linkedin": "https://www.linkedin.com/in/nicholas-patterson-156455145/", "greenhouse": "https://app6.greenhouse.io/people/undefined/applications/undefined/redesign"}, {"name": "Roman Serebryakov", "portfolio": "https://www.roman-loves.design", "linkedin": "https://www.linkedin.com/in/roman-s-54322759/", "greenhouse": "https://app6.greenhouse.io/people/undefined/applications/undefined/redesign"}, {"name": "Catherine Hsu", "portfolio": "https://www.figma.com/proto/mqHRimh1buZZcZKejybmbZ/Portfolio---Catherine-Hsu?page-id=181%3A21&node-id=181-247&viewport=25%2C651%2C0.04&t=aysvLvo97EjUZgeD-1&scaling=contain&content-scaling=fixed", "linkedin": "https://www.linkedin.com/in/catherinehsu01/", "greenhouse": "https://app6.greenhouse.io/people/undefined/applications/undefined/redesign"}, {"name": "Ravin Io", "portfolio": "https://raviniodesigns.com/", "linkedin": "https://www.linkedin.com/in/raviniodesigns", "greenhouse": "https://app6.greenhouse.io/people/undefined/applications/undefined/redesign"}, {"name": "Edward Obi", "portfolio": "https://www.behance.net/edwardobi", "linkedin": "https://www.linkedin.com/in/edward-obi", "greenhouse": "https://app6.greenhouse.io/people/undefined/applications/undefined/redesign"}, {"name": "Wen liu", "portfolio": "http://www.wensproject.com", "linkedin": "https://www.linkedin.com/in/wen-liu-157aaa82/", "greenhouse": "https://app6.greenhouse.io/people/undefined/applications/undefined/redesign"}, {"name": "Gowtham k", "portfolio": "https://www.linkedin.com/in/gowtham-k-80a765228/", "linkedin": "https://www.linkedin.com/in/gowtham-k-80a765228/", "greenhouse": "https://app6.greenhouse.io/people/undefined/applications/undefined/redesign"}, {"name": "Chuofan Zheng", "portfolio": "https://chuofan.design/", "linkedin": "https://www.linkedin.com/in/chuofandesign/", "greenhouse": "https://app6.greenhouse.io/people/undefined/applications/undefined/redesign"}, {"name": "Kevin Nguyen", "portfolio": "https://www.kevindesign.xyz/", "linkedin": "https://www.linkedin.com/in/kevindesign", "greenhouse": "https://app6.greenhouse.io/people/undefined/applications/undefined/redesign"}, {"name": "Meghna Singh", "portfolio": "https://meghnasingh.framer.website", "linkedin": "https://www.linkedin.com/in/meghna-singh-0095406a", "greenhouse": "https://app6.greenhouse.io/people/undefined/applications/undefined/redesign"}, {"name": "Andrea Hernandez", "portfolio": "http://www.andreahdz.com", "linkedin": "https://www.linkedin.com/in/andreahdzp/", "greenhouse": "https://app6.greenhouse.io/people/undefined/applications/undefined/redesign"}, {"name": "Liting Sun", "portfolio": "http://www.litingsun.com", "linkedin": "https://www.linkedin.com/in/litingsun/", "greenhouse": "https://app6.greenhouse.io/people/undefined/applications/undefined/redesign"}, {"name": "Shayna Roldan", "portfolio": "http://www.shaynaroldan.com", "linkedin": "https://www.linkedin.com/in/shaynaroldan/", "greenhouse": "https://app6.greenhouse.io/people/undefined/applications/undefined/redesign"}, {"name": "Davi Amorim", "portfolio": "https://www.davishama.com.br/", "linkedin": "https://www.linkedin.com/in/davishama/", "greenhouse": "https://app6.greenhouse.io/people/undefined/applications/undefined/redesign"}, {"name": "Brendan Barry", "portfolio": "https://brendanbarry.com/design-portfolio/", "linkedin": "https://www.linkedin.com/in/amalax/", "greenhouse": "https://app6.greenhouse.io/people/undefined/applications/undefined/redesign"}, {"name": "Bryan Dorsey", "portfolio": "https://bryandorsey.com", "linkedin": "https://linkedin.com/in/bryandorsey", "greenhouse": "https://app6.greenhouse.io/people/undefined/applications/undefined/redesign"}, {"name": "Ashlesha Kelkar", "portfolio": "https://ashleshask.wixsite.com/portfolio", "linkedin": "https://www.linkedin.com/in/ashleshak/", "greenhouse": "https://app6.greenhouse.io/people/undefined/applications/undefined/redesign"}, {"name": "Vinu Casper", "portfolio": "https://www.vinucasper.com/", "linkedin": "https://www.linkedin.com/in/vinucasper/", "greenhouse": "https://app6.greenhouse.io/people/undefined/applications/undefined/redesign"}, {"name": "Michael Ortega", "portfolio": "https://mortegadesign.com/", "linkedin": "https://www.linkedin.com/in/mikeortegatx/", "greenhouse": "https://app6.greenhouse.io/people/undefined/applications/undefined/redesign"}, {"name": "John De La Torre-Ugarte", "portfolio": "https://www.johndelatorre.com", "linkedin": "https://www.linkedin.com/in/johnericdelatorreugarte", "greenhouse": "https://app6.greenhouse.io/people/undefined/applications/undefined/redesign"}, {"name": "Emily Parkhurst", "portfolio": "https://emilyparkhurst.wixsite.com/design", "linkedin": "https://www.linkedin.com/in/emilyparkhurst/", "greenhouse": "https://app6.greenhouse.io/people/undefined/applications/undefined/redesign"}, {"name": "JOHN-PAUL STANISIC", "portfolio": "https://www.jpstanisic.com/", "linkedin": "https://www.linkedin.com/in/jpstanisic/", "greenhouse": "https://app6.greenhouse.io/people/undefined/applications/undefined/redesign"}, {"name": "Christine Liang", "portfolio": "https://www.christineliangdesign.com", "linkedin": "", "greenhouse": "https://app6.greenhouse.io/people/undefined/applications/undefined/redesign"}, {"name": "Divya Kodamasimham", "portfolio": "https://brdivi.myportfolio.com", "linkedin": "", "greenhouse": "https://app6.greenhouse.io/people/undefined/applications/undefined/redesign"}, {"name": "Jordan Walker", "portfolio": "http://www.jrdnwlkr.com", "linkedin": "https://www.linkedin.com/in/jrdnwlkr", "greenhouse": "https://app6.greenhouse.io/people/undefined/applications/undefined/redesign"}, {"name": "Chimdike Eze", "portfolio": "https://chimdikefavour.framer.website/", "linkedin": "https://www.linkedin.com/in/chimdike-eze-b94945123/", "greenhouse": "https://app6.greenhouse.io/people/undefined/applications/undefined/redesign"}, {"name": "Alana Appel", "portfolio": "https://www.alanaappel.com/mywork", "linkedin": "http://www.linkedin.com/in/alana-appel", "greenhouse": "https://app6.greenhouse.io/people/undefined/applications/undefined/redesign"}, {"name": "Hadi Altaf", "portfolio": "https://dribbble.com/hadialtaf", "linkedin": "https://www.linkedin.com/in/hadialtaf/", "greenhouse": "https://app6.greenhouse.io/people/undefined/applications/undefined/redesign"}, {"name": "Ramgopal Mohan", "portfolio": "https://www.ram.gd/", "linkedin": "https://www.linkedin.com/in/ramgopal96/", "greenhouse": "https://app6.greenhouse.io/people/undefined/applications/undefined/redesign"}, {"name": "Oluwatosin Kazeem", "portfolio": "https://oluwatosin.io/", "linkedin": "http://www.linkedin.com/in/oluwatosin-kazeem", "greenhouse": "https://app6.greenhouse.io/people/undefined/applications/undefined/redesign"}, {"name": "Ritesh Kumar", "portfolio": "https://riteshgallery.netlify.app", "linkedin": "https://www.linkedin.com/in/riteshgallery", "greenhouse": "https://app6.greenhouse.io/people/undefined/applications/undefined/redesign"}, {"name": "Kuzma Kotowski", "portfolio": "https://www.figma.com/proto/SSyYdfbHcxuFpu1iULrykN/UX-UI-Design-Portfolio-by-Kuzma-Kotowski?node-id=0-1&t=oZiscVXVYTOLIfEg-1", "linkedin": "https://linkedin.com/in/Kouwalsen", "greenhouse": "https://app6.greenhouse.io/people/undefined/applications/undefined/redesign"}, {"name": "Devin McVeigh", "portfolio": "http://www.devinmcveigh.com", "linkedin": "", "greenhouse": "https://app6.greenhouse.io/people/undefined/applications/undefined/redesign"}, {"name": "Emily Kern", "portfolio": "http://Www.emilykerndesign.com", "linkedin": "", "greenhouse": "https://app6.greenhouse.io/people/undefined/applications/undefined/redesign"}, {"name": "Franklin Huynh", "portfolio": "https://www.franklinhuynh.com/", "linkedin": "https://www.linkedin.com/in/huynhfranklin/", "greenhouse": "https://app6.greenhouse.io/people/undefined/applications/undefined/redesign"}, {"name": "Nora Benson", "portfolio": "https://www.norabenson.com", "linkedin": "https://www.linkedin.com/in/norabenson/", "greenhouse": "https://app6.greenhouse.io/people/undefined/applications/undefined/redesign"}, {"name": "Uma Dhamija", "portfolio": "https://uma-dhamija.vercel.app", "linkedin": "https://www.linkedin.com/in/uma-dhamija-5280ba48/", "greenhouse": "https://app6.greenhouse.io/people/undefined/applications/undefined/redesign"}, {"name": "WES MOORE", "portfolio": "https://www.wesismoore.com", "linkedin": "https://www.linkedin.com/in/wesmoore/", "greenhouse": "https://app6.greenhouse.io/people/undefined/applications/undefined/redesign"}, {"name": "Brooke Thrasher", "portfolio": "https://www.brookethrasherdesign.com", "linkedin": "https://www.linkedin.com/in/brookethrasher/", "greenhouse": "https://app6.greenhouse.io/people/undefined/applications/undefined/redesign"}, {"name": "Emil Jarfelt", "portfolio": "https://www.emiljarfelt.com", "linkedin": "https://www.linkedin.com/in/emil-jarfelt", "greenhouse": "https://app6.greenhouse.io/people/undefined/applications/undefined/redesign"}, {"name": "Connie Chen", "portfolio": "https://conniechen.design/", "linkedin": "https://www.linkedin.com/in/conniewzchen/", "greenhouse": "https://app6.greenhouse.io/people/undefined/applications/undefined/redesign"}, {"name": "Kele Webner", "portfolio": "https://www.kelewebner.com/", "linkedin": "https://www.linkedin.com/in/kelewebner/", "greenhouse": "https://app6.greenhouse.io/people/undefined/applications/undefined/redesign"}, {"name": "Karolina Jamula-Mucha", "portfolio": "https://karolinajm.com/", "linkedin": "https://www.linkedin.com/in/karolinajmucha/", "greenhouse": "https://app6.greenhouse.io/people/undefined/applications/undefined/redesign"}, {"name": "Alice Petrova", "portfolio": "http://www.alicepetrova.com", "linkedin": "https://www.linkedin.com/in/alicepetrova/", "greenhouse": "https://app6.greenhouse.io/people/undefined/applications/undefined/redesign"}, {"name": "Karyll Catubig", "portfolio": "https://karyll.com/", "linkedin": "https://www.linkedin.com/in/karyll/", "greenhouse": "https://app6.greenhouse.io/people/undefined/applications/undefined/redesign"}, {"name": "Frank Teng", "portfolio": "https://halcykon.github.io/UXPortfolio/", "linkedin": "", "greenhouse": "https://app6.greenhouse.io/people/undefined/applications/undefined/redesign"}, {"name": "Henry Han", "portfolio": "https://www.henryhan.net/", "linkedin": "https://www.linkedin.com/in/henry-han-4787083a/", "greenhouse": "https://app6.greenhouse.io/people/undefined/applications/undefined/redesign"}, {"name": "Michael Tsay", "portfolio": "https://www.michaeltsay.com/", "linkedin": "https://www.linkedin.com/in/michaeltsay/", "greenhouse": "https://app6.greenhouse.io/people/undefined/applications/undefined/redesign"}, {"name": "Diana Buriak", "portfolio": "https://dianaburiak.com/", "linkedin": "https://www.linkedin.com/in/diana-buriak/", "greenhouse": "https://app6.greenhouse.io/people/undefined/applications/undefined/redesign"}, {"name": "Mirna Mortada", "portfolio": "https://mirnamortada.my.canva.site/ux-design-portfolio", "linkedin": "https://www.linkedin.com/in/mirnamortada/", "greenhouse": "https://app6.greenhouse.io/people/undefined/applications/undefined/redesign"}, {"name": "Sharon Skillings", "portfolio": "http://www.sharonskillings.com", "linkedin": "https://www.linkedin.com/in/sharonskillings/", "greenhouse": "https://app6.greenhouse.io/people/undefined/applications/undefined/redesign"}, {"name": "Sarah Khalid", "portfolio": "http://www.sarahkdesign.me", "linkedin": "https://www.linkedin.com/in/sarah-khalid-41ba9329/", "greenhouse": "https://app6.greenhouse.io/people/undefined/applications/undefined/redesign"}, {"name": "Jenny Sanchez", "portfolio": "https://www.figma.com/deck/ysgkzsVcJedU5e1s2qfXry/Jenny-Sanchez-2026-Portfolio?node-id=11-735&t=CI7MKZ0EmUY9vhBJ-1&scaling=min-zoom&content-scaling=fixed&page-id=0%3A1", "linkedin": "https://www.linkedin.com/in/jennyhsiaosanchez/", "greenhouse": "https://app6.greenhouse.io/people/undefined/applications/undefined/redesign"}, {"name": "Atiyah Thomas", "portfolio": "https://www.atiyahthomas.com", "linkedin": "http://www.linkedin.com/in/atiyahthomas", "greenhouse": "https://app6.greenhouse.io/people/undefined/applications/undefined/redesign"}, {"name": "Aunsara Dennis", "portfolio": "https://aunsara.com/", "linkedin": "https://www.linkedin.com/in/aunsara/", "greenhouse": "https://app6.greenhouse.io/people/undefined/applications/undefined/redesign"}, {"name": "Jessica Prost", "portfolio": "http://www.jessicaprost.com", "linkedin": "https://www.linkedin.com/in/jessica-prost-24252921/", "greenhouse": "https://app6.greenhouse.io/people/undefined/applications/undefined/redesign"}, {"name": "David Do", "portfolio": "https://khoa-portfolio-psi.vercel.app/", "linkedin": "https://www.linkedin.com/in/david-do-3601127b/", "greenhouse": "https://app6.greenhouse.io/people/undefined/applications/undefined/redesign"}, {"name": "Joshua Ramires", "portfolio": "http://www.joshramires.com", "linkedin": "https://www.linkedin.com/in/joshua-ramires-5a72539/", "greenhouse": "https://app6.greenhouse.io/people/undefined/applications/undefined/redesign"}, {"name": "Julia Goldberg", "portfolio": "http://www.callmejulie.com", "linkedin": "https://www.linkedin.com/in/juliagoldberg1/", "greenhouse": "https://app6.greenhouse.io/people/undefined/applications/undefined/redesign"}, {"name": "Rotimi Davids", "portfolio": "http://www.rotimidavids.com", "linkedin": "", "greenhouse": "https://app6.greenhouse.io/people/undefined/applications/undefined/redesign"}, {"name": "Charles Kim", "portfolio": "https://cbkim.com/", "linkedin": "https://www.linkedin.com/in/charles--kim/", "greenhouse": "https://app6.greenhouse.io/people/undefined/applications/undefined/redesign"}, {"name": "Ari Daly", "portfolio": "http://www.aridaly.com", "linkedin": "https://www.linkedin.com/in/aridaly/", "greenhouse": "https://app6.greenhouse.io/people/undefined/applications/undefined/redesign"}, {"name": "Priscilla Peralta", "portfolio": "https://priscillaperalta.com/", "linkedin": "", "greenhouse": "https://app6.greenhouse.io/people/undefined/applications/undefined/redesign"}, {"name": "Duc Tran", "portfolio": "https://ducdotran.webflow.io/", "linkedin": "https://www.linkedin.com/in/duc101/", "greenhouse": "https://app6.greenhouse.io/people/undefined/applications/undefined/redesign"}, {"name": "Nayeli Perez", "portfolio": "https://nayeli-perez-portfolio.vercel.app/", "linkedin": "https://www.linkedin.com/in/nayelip/", "greenhouse": "https://app6.greenhouse.io/people/undefined/applications/undefined/redesign"}, {"name": "Clint Chapman", "portfolio": "https://www.clintchapman.design", "linkedin": "https://www.linkedin.com/in/cchapmandesign/", "greenhouse": "https://app6.greenhouse.io/people/undefined/applications/undefined/redesign"}, {"name": "Alana Vaccaro", "portfolio": "http://www.alanavaccaro.com", "linkedin": "http://www.linkedin.com/in/alanavaccaro", "greenhouse": "https://app6.greenhouse.io/people/undefined/applications/undefined/redesign"}, {"name": "renoj varghese", "portfolio": "https://renoj.framer.website/", "linkedin": "https://www.linkedin.com/in/renoj-varghese", "greenhouse": "https://app6.greenhouse.io/people/undefined/applications/undefined/redesign"}, {"name": "Chris Mitsuda", "portfolio": "https://www.chrismitsuda.com/", "linkedin": "https://www.linkedin.com/in/chrismitsuda/", "greenhouse": "https://app6.greenhouse.io/people/undefined/applications/undefined/redesign"}, {"name": "JULIA Lee", "portfolio": "https://julialee.me/", "linkedin": "https://www.linkedin.com/in/juliaslee/", "greenhouse": "https://app6.greenhouse.io/people/undefined/applications/undefined/redesign"}, {"name": "Sheeri Bornstein", "portfolio": "", "linkedin": "", "greenhouse": "https://app6.greenhouse.io/people/undefined/applications/undefined/redesign"}, {"name": "Aaron Pimentil", "portfolio": "", "linkedin": "", "greenhouse": "https://app6.greenhouse.io/people/undefined/applications/undefined/redesign"}, {"name": "Alex Gorbanescu", "portfolio": "", "linkedin": "", "greenhouse": "https://app6.greenhouse.io/people/undefined/applications/undefined/redesign"}, {"name": "SOURELLY HEREDIA", "portfolio": "", "linkedin": "", "greenhouse": "https://app6.greenhouse.io/people/undefined/applications/undefined/redesign"}, {"name": "Olena Bukhonok", "portfolio": "", "linkedin": "", "greenhouse": "https://app6.greenhouse.io/people/undefined/applications/undefined/redesign"}, {"name": "Dan (Dan) Jacobs", "portfolio": "", "linkedin": "", "greenhouse": "https://app6.greenhouse.io/people/undefined/applications/undefined/redesign"}, {"name": "Kartheek Gaddameedi", "portfolio": "", "linkedin": "", "greenhouse": "https://app6.greenhouse.io/people/undefined/applications/undefined/redesign"}, {"name": "Trina Badger", "portfolio": "", "linkedin": "", "greenhouse": "https://app6.greenhouse.io/people/undefined/applications/undefined/redesign"}, {"name": "Daniel Okpara", "portfolio": "", "linkedin": "", "greenhouse": "https://app6.greenhouse.io/people/undefined/applications/undefined/redesign"}, {"name": "Sebrand Warren", "portfolio": "", "linkedin": "", "greenhouse": "https://app6.greenhouse.io/people/undefined/applications/undefined/redesign"}, {"name": "Nick Laptov", "portfolio": "", "linkedin": "", "greenhouse": "https://app6.greenhouse.io/people/undefined/applications/undefined/redesign"}, {"name": "Nicholas Bowker", "portfolio": "", "linkedin": "", "greenhouse": "https://app6.greenhouse.io/people/undefined/applications/undefined/redesign"}, {"name": "Rishi Kiran Rajesh", "portfolio": "", "linkedin": "", "greenhouse": "https://app6.greenhouse.io/people/undefined/applications/undefined/redesign"}, {"name": "Bradley Bussolini", "portfolio": "", "linkedin": "", "greenhouse": "https://app6.greenhouse.io/people/undefined/applications/undefined/redesign"}, {"name": "Bob (Bob) Mercker", "portfolio": "", "linkedin": "", "greenhouse": "https://app6.greenhouse.io/people/undefined/applications/undefined/redesign"}, {"name": "Deborah Levison", "portfolio": "", "linkedin": "", "greenhouse": "https://app6.greenhouse.io/people/undefined/applications/undefined/redesign"}, {"name": "Kiera Westphal", "portfolio": "", "linkedin": "", "greenhouse": "https://app6.greenhouse.io/people/undefined/applications/undefined/redesign"}, {"name": "Sam Johnston", "portfolio": "", "linkedin": "", "greenhouse": "https://app6.greenhouse.io/people/undefined/applications/undefined/redesign"}, {"name": "Tiffany (Tiffany) Yu", "portfolio": "", "linkedin": "", "greenhouse": "https://app6.greenhouse.io/people/undefined/applications/undefined/redesign"}, {"name": "Dhruvi Shah", "portfolio": "", "linkedin": "", "greenhouse": "https://app6.greenhouse.io/people/undefined/applications/undefined/redesign"}, {"name": "Nina Myers", "portfolio": "", "linkedin": "", "greenhouse": "https://app6.greenhouse.io/people/undefined/applications/undefined/redesign"}, {"name": "Olga Romanova", "portfolio": "", "linkedin": "", "greenhouse": "https://app6.greenhouse.io/people/undefined/applications/undefined/redesign"}, {"name": "Amanda Thomason", "portfolio": "", "linkedin": "", "greenhouse": "https://app6.greenhouse.io/people/undefined/applications/undefined/redesign"}];
+
+const STATUS_NEXT = { unreviewed:'starred', starred:'shortlisted', shortlisted:'pass', pass:'unreviewed' };
+const STATUS_LABELS = { unreviewed:'—', starred:'Yes', shortlisted:'Maybe', pass:'Pass' };
+
+const PAGE_SIZE = 25;
+const screenshotCache = {};
+let statuses = {};
+let activeIdx = null;
+let currentFilter = 'all';
+let searchQuery = '';
+let currentPage = 0;
+let visibleIndices = [];
+let pageIndices = [];
+
+function screenshotUrl(url) {
+  return `https://s.wordpress.com/mshots/v1/${encodeURIComponent(url)}?w=1280&h=960`;
+}
+
+function initials(name) {
+  return name.split(' ').filter(Boolean).map(w=>w[0].toUpperCase()).slice(0,2).join('');
+}
+function avatarStyle(name) {
+  const palettes = [
+    ['#c8f55a','#0a0a0a'],['#7b6ef6','#fff'],['#5af599','#0a0a0a'],
+    ['#f5b55a','#0a0a0a'],['#f55a6e','#fff'],['#5ab4f5','#0a0a0a'],
+    ['#e87df5','#0a0a0a'],['#f5d45a','#0a0a0a'],
+  ];
+  let h = 0; for (const c of name) h = ((h<<5)-h+c.charCodeAt(0))|0;
+  const [bg,fg] = palettes[Math.abs(h) % palettes.length];
+  return `background:${bg};color:${fg}`;
+}
+
+
+function renderList() {
+  const list = document.getElementById('candidate-list');
+  const q = searchQuery.toLowerCase();
+  visibleIndices = [];
+  CANDIDATES.forEach((c,i) => {
+    const status = statuses[i] || 'unreviewed';
+    const matchSearch = !q || c.name.toLowerCase().includes(q);
+    const matchFilter =
+      currentFilter === 'all' ||
+      (currentFilter === 'portfolio' && c.portfolio) ||
+      (currentFilter === 'starred' && status === 'starred') ||
+      (currentFilter === 'shortlisted' && status === 'shortlisted') ||
+      (currentFilter === 'pass' && status === 'pass');
+    if (matchSearch && matchFilter) visibleIndices.push(i);
+  });
+
+  const totalPages = Math.max(1, Math.ceil(visibleIndices.length / PAGE_SIZE));
+  if (currentPage >= totalPages) currentPage = totalPages - 1;
+  if (currentPage < 0) currentPage = 0;
+  pageIndices = visibleIndices.slice(currentPage * PAGE_SIZE, (currentPage + 1) * PAGE_SIZE);
+
+  const withPort = visibleIndices.filter(i => CANDIDATES[i].portfolio).length;
+  const noPort = visibleIndices.filter(i => !CANDIDATES[i].portfolio).length;
+  document.getElementById('sidebar-count').textContent =
+    withPort + ' with portfolio' + (noPort ? ' · ' + noPort + ' without' : '');
+
+  // Pagination controls
+  document.getElementById('page-info').textContent = (currentPage + 1) + ' / ' + totalPages;
+  document.getElementById('page-prev').disabled = currentPage === 0;
+  document.getElementById('page-next').disabled = currentPage >= totalPages - 1;
+
+  list.innerHTML = '';
+  pageIndices.forEach(i => {
+    const c = CANDIDATES[i];
+    const status = statuses[i] || 'unreviewed';
+    const row = document.createElement('div');
+    row.className = 'candidate-row' + (i===activeIdx ? ' active' : '');
+    row.innerHTML = `
+      <div class="candidate-avatar" style="${avatarStyle(c.name)};width:30px;height:30px;border-radius:50%;font-size:11px;font-weight:700;flex-shrink:0;display:flex;align-items:center;justify-content:center">${initials(c.name)}</div>
+      <div class="candidate-info">
+        <div class="candidate-name">${c.name}</div>
+        <div class="candidate-meta">
+          ${c.linkedin ? '<span style="display:flex;align-items:center;gap:3px"><span class="dot-li"></span>LI</span>' : ''}
+          ${!c.portfolio ? '<span class="no-port-badge">no portfolio</span>' : ''}
+        </div>
+      </div>
+      <div class="status-wrap" data-idx="${i}">
+        <span class="status-badge ${status}">${STATUS_LABELS[status]}</span>
+        <div class="status-dropdown">
+          <div class="status-option opt-starred" data-status="starred">Yes</div>
+          <div class="status-option opt-shortlisted" data-status="shortlisted">Maybe</div>
+          <div class="status-option opt-pass" data-status="pass">Pass</div>
+        </div>
+      </div>`;
+    row.querySelector('.status-badge').addEventListener('click', e => { e.stopPropagation(); toggleDropdown(i); });
+    row.querySelectorAll('.status-option').forEach(opt => {
+      opt.addEventListener('click', e => { e.stopPropagation(); setStatus(i, opt.dataset.status); });
+    });
+    row.addEventListener('click', () => selectCandidate(i));
+    list.appendChild(row);
+  });
+  updateStats();
+  prefetchPageThumbnails();
+}
+
+function changePage(delta) {
+  currentPage += delta;
+  activeIdx = null;
+  renderList();
+  document.getElementById('candidate-list').scrollTop = 0;
+}
+
+let prefetchQueue = [];
+let activePrefetches = 0;
+const MAX_CONCURRENT = 4;
+
+function prefetchPageThumbnails() {
+  prefetchQueue = [];
+  activePrefetches = 0;
+  pageIndices.forEach(i => {
+    const c = CANDIDATES[i];
+    if (c.portfolio && !screenshotCache[i]) {
+      prefetchQueue.push(i);
+    }
+  });
+  drainPrefetchQueue();
+}
+
+function drainPrefetchQueue() {
+  while (activePrefetches < MAX_CONCURRENT && prefetchQueue.length > 0) {
+    const i = prefetchQueue.shift();
+    if (screenshotCache[i] && screenshotCache[i] !== 'pending') continue;
+    screenshotCache[i] = 'loading';
+    activePrefetches++;
+    fetchWithRetry(i, 0);
+  }
+}
+
+function fetchWithRetry(i, attempt) {
+  const img = new Image();
+  const src = screenshotUrl(CANDIDATES[i].portfolio);
+  img.onload = () => {
+    // mshots returns a 400x300 placeholder while generating — retry up to 8 times
+    if (img.naturalWidth <= 400 && img.naturalHeight <= 300 && attempt < 8) {
+      setTimeout(() => fetchWithRetry(i, attempt + 1), 3000);
+      return;
+    }
+    screenshotCache[i] = src;
+    activePrefetches--;
+    drainPrefetchQueue();
+  };
+  img.onerror = () => { screenshotCache[i] = 'error'; activePrefetches--; drainPrefetchQueue(); };
+  // Cache-bust only on retries so CDN picks up the newly generated screenshot
+  img.src = attempt > 0 ? src + '&_r=' + attempt : src;
+}
+
+function selectCandidate(idx) {
+  activeIdx = idx;
+  renderList();
+  document.querySelector('.candidate-row.active')?.scrollIntoView({block:'nearest'});
+  loadPreview(idx);
+}
+
+function loadPreview(idx) {
+  const c = CANDIDATES[idx];
+  const status = statuses[idx] || 'unreviewed';
+
+  document.getElementById('preview-name').textContent = c.name;
+  document.getElementById('preview-url').textContent = c.portfolio || 'No portfolio link';
+
+  // Actions bar
+  const acts = document.getElementById('preview-actions');
+  acts.innerHTML = '';
+  if (c.portfolio) {
+    const a = document.createElement('a');
+    a.href = c.portfolio; a.target = '_blank';
+    a.className = 'action-btn port'; a.textContent = '⇗ Open Portfolio';
+    acts.appendChild(a);
+  }
+  if (c.linkedin) {
+    const a = document.createElement('a');
+    a.href = c.linkedin; a.target = '_blank';
+    a.className = 'action-btn li'; a.textContent = 'in LinkedIn';
+    acts.appendChild(a);
+  }
+  if (c.greenhouse) {
+    const a = document.createElement('a');
+    a.href = c.greenhouse; a.target = '_blank';
+    a.className = 'action-btn'; a.textContent = '⬡ Greenhouse';
+    acts.appendChild(a);
+  }
+  const wrap = document.createElement('div');
+  wrap.className = 'status-wrap';
+  wrap.dataset.idx = idx;
+  wrap.innerHTML = `
+    <button class="action-btn status-badge ${status}">${STATUS_LABELS[status]}</button>
+    <div class="status-dropdown">
+      <div class="status-option opt-starred" data-status="starred">Yes</div>
+      <div class="status-option opt-shortlisted" data-status="shortlisted">Maybe</div>
+      <div class="status-option opt-pass" data-status="pass">Pass</div>
+    </div>`;
+  wrap.querySelector('.status-badge').onclick = (e) => { e.stopPropagation(); toggleDropdown(idx); };
+  wrap.querySelectorAll('.status-option').forEach(opt => {
+    opt.onclick = (e) => { e.stopPropagation(); setStatus(idx, opt.dataset.status); };
+  });
+  const sb = wrap;
+  acts.appendChild(sb);
+
+  // Content
+  const content = document.getElementById('preview-content');
+
+  if (!c.portfolio) {
+    content.innerHTML = `
+      <div class="no-port-state">
+        <div class="no-port-glyph">∅</div>
+        <div class="no-port-text">No portfolio link for ${c.name}${c.greenhouse ? '<br><a href="'+c.greenhouse+'" target="_blank" style="color:var(--accent2);text-decoration:none">View in Greenhouse ↗</a>' : ''}</div>
+      </div>`;
+    return;
+  }
+
+  content.innerHTML = `
+    <div class="screenshot-view">
+      <a class="screenshot-card" href="${c.portfolio}" target="_blank" style="display:block;text-decoration:none;color:inherit;cursor:pointer">
+        <div class="browser-chrome">
+          <div class="browser-dots">
+            <div class="browser-dot red"></div>
+            <div class="browser-dot yellow"></div>
+            <div class="browser-dot green"></div>
+          </div>
+          <div class="browser-bar">${c.portfolio}</div>
+        </div>
+        <div class="screenshot-img-wrap">
+          <div class="loading-state" id="loading-${idx}">
+            <div class="loading-spinner"></div>
+            <div class="loading-label">Loading thumbnail…</div>
+          </div>
+          <div class="error-state" id="error-${idx}">
+            <div class="error-icon">◫</div>
+            <div class="error-text">Screenshot unavailable<br>for this site</div>
+            <div class="btn-row">
+              <button class="retry-btn" onclick="event.preventDefault();retryScreenshot(${idx})">↺ Retry</button>
+              <span class="open-btn">Open Portfolio ↗</span>
+            </div>
+          </div>
+          <img id="ss-img-${idx}" class="screenshot-img" style="opacity:0" alt="${c.name} portfolio screenshot" />
+        </div>
+      </a>
+      <div style="text-align:center;padding-bottom:16px">
+        <a href="${c.portfolio}" target="_blank" class="open-btn" style="display:inline-block;padding:10px 24px;font-size:12px;border-radius:6px;text-decoration:none">Open Full Portfolio ↗</a>
+      </div>
+    </div>`;
+
+  loadScreenshot(idx, c.portfolio);
+}
+
+function loadScreenshot(idx, url) {
+  const img = document.getElementById(`ss-img-${idx}`);
+  const loading = document.getElementById(`loading-${idx}`);
+  const error = document.getElementById(`error-${idx}`);
+  if (!img) return;
+
+  const cached = screenshotCache[idx];
+
+  // Already prefetched — show instantly
+  if (cached && cached !== 'loading' && cached !== 'error') {
+    img.src = cached;
+    img.style.opacity = '1';
+    if (loading) loading.classList.add('hidden');
+    if (error) error.classList.remove('visible');
+    return;
+  }
+
+  // Prefetch failed — show error immediately
+  if (cached === 'error') {
+    if (loading) loading.classList.add('hidden');
+    if (error) error.classList.add('visible');
+    return;
+  }
+
+  // Prefetch still in progress — wait for it
+  if (cached === 'loading') {
+    const poll = setInterval(() => {
+      const st = screenshotCache[idx];
+      if (st === 'loading') return;
+      clearInterval(poll);
+      loadScreenshot(idx, url);
+    }, 100);
+    return;
+  }
+
+  // No cache — load fresh
+  const src = screenshotUrl(url);
+  img.onload = () => {
+    img.style.opacity = '1';
+    if (loading) loading.classList.add('hidden');
+    if (error) error.classList.remove('visible');
+    screenshotCache[idx] = src;
+  };
+  img.onerror = () => {
+    if (loading) loading.classList.add('hidden');
+    if (error) error.classList.add('visible');
+    screenshotCache[idx] = 'error';
+  };
+  img.src = src;
+}
+
+function retryScreenshot(idx) {
+  const c = CANDIDATES[idx];
+  if (!c?.portfolio) return;
+  const error = document.getElementById(`error-${idx}`);
+  const loading = document.getElementById(`loading-${idx}`);
+  const img = document.getElementById(`ss-img-${idx}`);
+  if (error) error.classList.remove('visible');
+  if (loading) loading.classList.remove('hidden');
+  if (img) { img.style.opacity='0'; img.src=''; }
+  setTimeout(() => loadScreenshot(idx, c.portfolio), 300);
+}
+
+function toggleDropdown(idx) {
+  const wrap = document.querySelector(`.status-wrap[data-idx="${idx}"]`);
+  const wasOpen = wrap?.classList.contains('open');
+  closeAllDropdowns();
+  if (!wasOpen && wrap) wrap.classList.add('open');
+}
+
+function closeAllDropdowns() {
+  document.querySelectorAll('.status-wrap.open').forEach(w => w.classList.remove('open'));
+}
+
+function setStatus(idx, status) {
+  statuses[idx] = status;
+  closeAllDropdowns();
+  renderList();
+  if (idx === activeIdx) loadPreview(idx);
+  updateStats();
+}
+
+function cycleStatus(idx) {
+  statuses[idx] = STATUS_NEXT[statuses[idx]||'unreviewed'];
+  renderList();
+  if (idx === activeIdx) loadPreview(idx);
+  updateStats();
+}
+
+function updateStats() {
+  document.getElementById('hdr-starred').textContent = Object.values(statuses).filter(s=>s==='starred').length;
+  document.getElementById('hdr-shortlisted').textContent = Object.values(statuses).filter(s=>s==='shortlisted').length;
+}
+
+function filterList() {
+  searchQuery = document.getElementById('search').value;
+  currentPage = 0;
+  renderList();
+}
+
+function setFilter(f, btn) {
+  currentFilter = f;
+  currentPage = 0;
+  document.querySelectorAll('.filter-btn').forEach(b=>b.classList.remove('active'));
+  btn.classList.add('active');
+  renderList();
+}
+
+document.addEventListener('click', e => {
+  if (!e.target.closest('.status-wrap')) closeAllDropdowns();
+});
+
+document.addEventListener('keydown', e => {
+  if (e.target.tagName==='INPUT') return;
+  const pos = pageIndices.indexOf(activeIdx);
+  if (e.key==='ArrowDown') {
+    e.preventDefault();
+    if (pos < pageIndices.length-1) {
+      selectCandidate(pageIndices[pos+1]);
+    } else if (currentPage < Math.ceil(visibleIndices.length/PAGE_SIZE)-1) {
+      changePage(1); selectCandidate(pageIndices[0]);
+    }
+  } else if (e.key==='ArrowUp') {
+    e.preventDefault();
+    if (pos > 0) {
+      selectCandidate(pageIndices[pos-1]);
+    } else if (currentPage > 0) {
+      changePage(-1); selectCandidate(pageIndices[pageIndices.length-1]);
+    }
+  } else if (e.key==='ArrowRight') {
+    e.preventDefault(); if (currentPage < Math.ceil(visibleIndices.length/PAGE_SIZE)-1) changePage(1);
+  } else if (e.key==='ArrowLeft') {
+    e.preventDefault(); if (currentPage > 0) changePage(-1);
+  } else if (e.key.toLowerCase()==='s') {
+    if (activeIdx!==null) { statuses[activeIdx]='starred'; renderList(); loadPreview(activeIdx); updateStats(); }
+  } else if (e.key.toLowerCase()==='g') {
+    if (activeIdx!==null) { statuses[activeIdx]='shortlisted'; renderList(); loadPreview(activeIdx); updateStats(); }
+  } else if (e.key.toLowerCase()==='p') {
+    if (activeIdx!==null) { statuses[activeIdx]='pass'; renderList(); loadPreview(activeIdx); updateStats(); }
+  } else if (e.key.toLowerCase()==='o') {
+    if (activeIdx!==null && CANDIDATES[activeIdx]?.portfolio) window.open(CANDIDATES[activeIdx].portfolio,'_blank');
+  }
+});
+
+renderList();
+</script>
+</body>
+</html>
