@@ -247,6 +247,83 @@
   .keys-hint:hover { opacity: 1; }
   .key { font-family: var(--mono); font-size: 10px; color: var(--text3); display: flex; align-items: center; gap: 4px; }
   kbd { background: var(--surface); border: 1px solid var(--border2); border-radius: 3px; padding: 1px 5px; font-size: 10px; font-family: var(--mono); color: var(--text2); }
+
+  /* FEED TOGGLE */
+  #feed-toggle.active { background: var(--accent2); border-color: var(--accent2); color: #fff; font-weight: 600; }
+
+  /* FEED VIEW */
+  .feed-view {
+    flex: 1;
+    overflow-y: auto;
+    padding: 24px 32px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 24px;
+    scrollbar-width: thin;
+    scrollbar-color: var(--border2) transparent;
+  }
+
+  .feed-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    overflow: hidden;
+    cursor: pointer;
+    transition: border-color 0.15s, box-shadow 0.15s;
+    max-width: 960px;
+    width: 100%;
+    flex-shrink: 0;
+  }
+  .feed-card:hover { border-color: var(--border2); box-shadow: 0 4px 20px rgba(0,0,0,0.3); }
+  .feed-card.active { border-color: var(--accent); box-shadow: 0 0 0 1px var(--accent); }
+
+  .feed-card-header {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 12px 16px;
+    border-bottom: 1px solid var(--border);
+  }
+  .feed-card-name { font-size: 14px; font-weight: 600; flex: 1; }
+  .feed-card-url { font-family: var(--mono); font-size: 10px; color: var(--text3); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; max-width: 300px; }
+
+  .feed-card-img-wrap {
+    position: relative;
+    width: 100%;
+    min-height: 200px;
+    background: var(--bg);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  .feed-card-img {
+    width: 100%;
+    display: block;
+    opacity: 0;
+    transition: opacity 0.4s;
+  }
+  .feed-card-img.loaded { opacity: 1; }
+
+  .feed-card-placeholder {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: var(--mono);
+    font-size: 11px;
+    color: var(--text3);
+  }
+  .feed-card-placeholder.hidden { display: none; }
+
+  .feed-no-portfolio {
+    padding: 40px;
+    text-align: center;
+    font-family: var(--mono);
+    font-size: 11px;
+    color: var(--text3);
+  }
 </style>
 </head>
 <body>
@@ -282,6 +359,8 @@
       <button class="filter-btn" onclick="setFilter('starred',this)">Yes</button>
       <button class="filter-btn" onclick="setFilter('shortlisted',this)">Maybe</button>
       <button class="filter-btn" onclick="setFilter('pass',this)">✗ Pass</button>
+      <span style="width:1px;height:16px;background:var(--border2);margin:0 2px;align-self:center"></span>
+      <button class="filter-btn" id="feed-toggle" onclick="toggleFeed()">☰ Feed</button>
     </div>
     <div class="sidebar-count" id="sidebar-count">176 with portfolio · 23 without</div>
     <div class="sidebar-list" id="candidate-list"></div>
@@ -313,6 +392,7 @@
   <span class="key"><kbd>G</kbd> Maybe</span>
   <span class="key"><kbd>P</kbd> Pass</span>
   <span class="key"><kbd>O</kbd> Open</span>
+  <span class="key"><kbd>F</kbd> Feed</span>
 </div>
 
 <script>
@@ -328,6 +408,7 @@ let activeIdx = null;
 let currentFilter = 'all';
 let searchQuery = '';
 let currentPage = 0;
+let feedMode = false;
 let visibleIndices = [];
 let pageIndices = [];
 
@@ -413,6 +494,7 @@ function renderList() {
   });
   updateStats();
   prefetchPageThumbnails();
+  if (feedMode) renderFeed();
 }
 
 function changePage(delta) {
@@ -470,7 +552,16 @@ function selectCandidate(idx) {
   activeIdx = idx;
   renderList();
   document.querySelector('.candidate-row.active')?.scrollIntoView({block:'nearest'});
-  loadPreview(idx);
+  if (!feedMode) {
+    loadPreview(idx);
+  } else {
+    const card = document.querySelector(`.feed-card[data-idx="${idx}"]`);
+    if (card) {
+      document.querySelectorAll('.feed-card').forEach(fc => fc.classList.remove('active'));
+      card.classList.add('active');
+      card.scrollIntoView({block:'nearest', behavior:'smooth'});
+    }
+  }
 }
 
 function loadPreview(idx) {
@@ -643,14 +734,14 @@ function setStatus(idx, status) {
   statuses[idx] = status;
   closeAllDropdowns();
   renderList();
-  if (idx === activeIdx) loadPreview(idx);
+  if (idx === activeIdx && !feedMode) loadPreview(idx);
   updateStats();
 }
 
 function cycleStatus(idx) {
   statuses[idx] = STATUS_NEXT[statuses[idx]||'unreviewed'];
   renderList();
-  if (idx === activeIdx) loadPreview(idx);
+  if (idx === activeIdx && !feedMode) loadPreview(idx);
   updateStats();
 }
 
@@ -671,6 +762,147 @@ function setFilter(f, btn) {
   document.querySelectorAll('.filter-btn').forEach(b=>b.classList.remove('active'));
   btn.classList.add('active');
   renderList();
+}
+
+function toggleFeed() {
+  feedMode = !feedMode;
+  document.getElementById('feed-toggle').classList.toggle('active', feedMode);
+  if (feedMode) {
+    renderFeed();
+  } else {
+    document.querySelector('.preview-toolbar').style.display = '';
+    if (activeIdx !== null) {
+      loadPreview(activeIdx);
+    } else {
+      document.getElementById('preview-content').innerHTML =
+        '<div class="empty-state"><div class="empty-glyph">◈</div><div class="empty-text">Select a candidate from the list<br>to view their portfolio screenshot</div></div>';
+    }
+  }
+}
+
+function renderFeed() {
+  const toolbar = document.querySelector('.preview-toolbar');
+  toolbar.style.display = 'none';
+
+  const content = document.getElementById('preview-content');
+  content.innerHTML = '<div class="feed-view" id="feed-container"></div>';
+  const container = document.getElementById('feed-container');
+
+  if (pageIndices.length === 0) {
+    container.innerHTML = '<div class="empty-state"><div class="empty-glyph">◈</div><div class="empty-text">No candidates match current filters</div></div>';
+    return;
+  }
+
+  pageIndices.forEach(i => {
+    const c = CANDIDATES[i];
+    const status = statuses[i] || 'unreviewed';
+    const card = document.createElement('div');
+    card.className = 'feed-card' + (i === activeIdx ? ' active' : '');
+    card.dataset.idx = i;
+
+    if (!c.portfolio) {
+      card.innerHTML = `
+        <div class="feed-card-header">
+          <div class="candidate-avatar" style="${avatarStyle(c.name)}">${initials(c.name)}</div>
+          <span class="feed-card-name">${c.name}</span>
+          <span class="status-badge ${status}">${STATUS_LABELS[status]}</span>
+        </div>
+        <div class="feed-no-portfolio">No portfolio link</div>`;
+    } else {
+      card.innerHTML = `
+        <div class="feed-card-header">
+          <div class="candidate-avatar" style="${avatarStyle(c.name)}">${initials(c.name)}</div>
+          <span class="feed-card-name">${c.name}</span>
+          <span class="feed-card-url">${c.portfolio}</span>
+          <span class="status-badge ${status}">${STATUS_LABELS[status]}</span>
+        </div>
+        <div class="feed-card-img-wrap">
+          <div class="feed-card-placeholder" id="feed-ph-${i}">
+            <div class="loading-spinner"></div>
+          </div>
+          <img class="feed-card-img" id="feed-img-${i}" data-idx="${i}" alt="${c.name}" />
+        </div>`;
+    }
+
+    card.addEventListener('click', () => {
+      activeIdx = i;
+      renderList();
+      container.querySelectorAll('.feed-card').forEach(fc => fc.classList.remove('active'));
+      card.classList.add('active');
+    });
+
+    container.appendChild(card);
+  });
+
+  setupFeedObserver();
+}
+
+function setupFeedObserver() {
+  const container = document.getElementById('feed-container');
+  if (!container) return;
+
+  function loadVisible() {
+    const cRect = container.getBoundingClientRect();
+    container.querySelectorAll('.feed-card-img-wrap').forEach(wrap => {
+      if (wrap.dataset.loaded) return;
+      const r = wrap.getBoundingClientRect();
+      // Load if within 400px of visible area
+      if (r.bottom > cRect.top - 400 && r.top < cRect.bottom + 400) {
+        wrap.dataset.loaded = '1';
+        const img = wrap.querySelector('.feed-card-img');
+        if (img) loadFeedScreenshot(parseInt(img.dataset.idx));
+      }
+    });
+  }
+
+  // Load initially visible cards right away
+  loadVisible();
+  // Load more as user scrolls
+  container.addEventListener('scroll', loadVisible, { passive: true });
+}
+
+function loadFeedScreenshot(idx) {
+  const img = document.getElementById(`feed-img-${idx}`);
+  const ph = document.getElementById(`feed-ph-${idx}`);
+  if (!img) return;
+  const c = CANDIDATES[idx];
+  if (!c.portfolio) return;
+
+  const cached = screenshotCache[idx];
+
+  if (cached && cached !== 'loading' && cached !== 'error') {
+    img.src = cached;
+    img.classList.add('loaded');
+    if (ph) ph.classList.add('hidden');
+    return;
+  }
+
+  if (cached === 'error') {
+    if (ph) { ph.innerHTML = '<span>Screenshot unavailable</span>'; }
+    return;
+  }
+
+  if (cached === 'loading') {
+    const poll = setInterval(() => {
+      const st = screenshotCache[idx];
+      if (st === 'loading') return;
+      clearInterval(poll);
+      loadFeedScreenshot(idx);
+    }, 200);
+    return;
+  }
+
+  const src = screenshotUrl(c.portfolio);
+  img.onload = () => {
+    img.classList.add('loaded');
+    if (ph) ph.classList.add('hidden');
+    screenshotCache[idx] = src;
+  };
+  img.onerror = () => {
+    if (ph) { ph.innerHTML = '<span>Screenshot unavailable</span>'; }
+    screenshotCache[idx] = 'error';
+  };
+  img.src = src;
 }
 
 document.addEventListener('click', e => {
@@ -699,13 +931,15 @@ document.addEventListener('keydown', e => {
   } else if (e.key==='ArrowLeft') {
     e.preventDefault(); if (currentPage > 0) changePage(-1);
   } else if (e.key.toLowerCase()==='s') {
-    if (activeIdx!==null) { statuses[activeIdx]='starred'; renderList(); loadPreview(activeIdx); updateStats(); }
+    if (activeIdx!==null) { statuses[activeIdx]='starred'; renderList(); if (!feedMode) loadPreview(activeIdx); updateStats(); }
   } else if (e.key.toLowerCase()==='g') {
-    if (activeIdx!==null) { statuses[activeIdx]='shortlisted'; renderList(); loadPreview(activeIdx); updateStats(); }
+    if (activeIdx!==null) { statuses[activeIdx]='shortlisted'; renderList(); if (!feedMode) loadPreview(activeIdx); updateStats(); }
   } else if (e.key.toLowerCase()==='p') {
-    if (activeIdx!==null) { statuses[activeIdx]='pass'; renderList(); loadPreview(activeIdx); updateStats(); }
+    if (activeIdx!==null) { statuses[activeIdx]='pass'; renderList(); if (!feedMode) loadPreview(activeIdx); updateStats(); }
   } else if (e.key.toLowerCase()==='o') {
     if (activeIdx!==null && CANDIDATES[activeIdx]?.portfolio) window.open(CANDIDATES[activeIdx].portfolio,'_blank');
+  } else if (e.key.toLowerCase()==='f') {
+    toggleFeed();
   }
 });
 
